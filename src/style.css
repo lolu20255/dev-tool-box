@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer utilities {
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  .font-rajdhani {
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .bg-grid-cyan {
+    background-image:
+      linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .scanlines {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.05) 50%
+    );
+    background-size: 100% 4px;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100%;
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      text-shadow: 0 0 20px rgba(6, 182, 212, 0.8), 0 0 40px rgba(236, 72, 153, 0.6);
+    }
+    50% {
+      text-shadow: 0 0 30px rgba(6, 182, 212, 1), 0 0 60px rgba(236, 72, 153, 0.8);
+    }
+  }
+
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .cyber-panel {
+    @apply bg-black bg-opacity-60 backdrop-blur-md border-2 border-cyan-500 rounded-lg overflow-hidden;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.1);
+  }
+
+  .cyber-panel-header {
+    @apply flex items-center justify-between px-4 py-3 bg-gradient-to-r from-cyan-900 to-purple-900 border-b-2 border-cyan-500;
+  }
+
+  .cyber-input {
+    @apply w-full bg-black bg-opacity-80 text-cyan-300 p-4 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-inset;
+    text-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+  }
+
+  .cyber-input::placeholder {
+    @apply text-gray-600;
+  }
+
+  .cyber-button {
+    @apply px-8 py-4 bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold text-lg font-orbitron rounded-lg;
+    @apply hover:from-cyan-400 hover:to-pink-400 transform hover:scale-105 active:scale-95;
+    @apply transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    @apply relative overflow-hidden;
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), 0 0 50px rgba(236, 72, 153, 0.3);
+  }
+
+  .cyber-button::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0;
+    @apply group-hover:opacity-30 transition-opacity duration-500;
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .cyber-button-secondary {
+    @apply px-6 py-2 bg-cyan-900 text-cyan-300 font-bold font-orbitron rounded border-2 border-cyan-500;
+    @apply hover:bg-cyan-800 hover:text-cyan-200 transition-all duration-200;
+  }
+
+  .cyber-modal {
+    @apply bg-black bg-opacity-95 backdrop-blur-lg border-2 border-cyan-500 rounded-xl;
+    box-shadow: 0 0 50px rgba(6, 182, 212, 0.5), inset 0 0 30px rgba(6, 182, 212, 0.1);
+  }
+
+  .cyber-stat {
+    @apply bg-black bg-opacity-80 border-2 border-cyan-500 rounded-lg p-4 text-center;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+  }
+
+  .cyber-diff-item {
+    @apply bg-black bg-opacity-80 border-l-4 rounded p-3;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+  }
+}
+
+/* Modal transitions */
+.modal-enter-active,
+.modal-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.modal-enter-to,
+.modal-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}

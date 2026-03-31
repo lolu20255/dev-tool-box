@@ -2,8 +2,8 @@
   <div>
     <!-- SEO Content Section -->
     <section class="mb-8 text-center">
-      <h2 class="text-2xl font-orbitron text-cyan-300 mb-3">Compare JSON Objects Online - Free JSON Diff Tool</h2>
-      <p class="text-gray-400 max-w-3xl mx-auto mb-4">
+      <h2 class="text-2xl font-orbitron section-title mb-3">Compare JSON Objects Online - Free JSON Diff Tool</h2>
+      <p class="muted max-w-3xl mx-auto mb-4">
         Instantly compare two JSON objects and detect differences. Our free online JSON diff tool helps developers identify added, modified, and removed properties in API responses, product data, and configuration files.
       </p>
     </section>
@@ -12,8 +12,8 @@
       <!-- Before JSON -->
       <div class="cyber-panel">
         <div class="cyber-panel-header">
-          <span class="text-cyan-400 font-mono">&gt; BEFORE.JSON</span>
-          <div class="h-2 w-2 bg-cyan-400 rounded-full animate-pulse"></div>
+          <span class="panel-label-primary font-mono">&gt; BEFORE.JSON</span>
+          <div class="h-2 w-2 dot-primary rounded-full animate-pulse"></div>
         </div>
         <textarea
           v-model="beforeJson"
@@ -26,8 +26,8 @@
       <!-- After JSON -->
       <div class="cyber-panel">
         <div class="cyber-panel-header">
-          <span class="text-pink-400 font-mono">&gt; AFTER.JSON</span>
-          <div class="h-2 w-2 bg-pink-400 rounded-full animate-pulse"></div>
+          <span class="panel-label-secondary font-mono">&gt; AFTER.JSON</span>
+          <div class="h-2 w-2 dot-secondary rounded-full animate-pulse"></div>
         </div>
         <textarea
           v-model="afterJson"
@@ -55,11 +55,11 @@
     </div>
 
     <!-- Error Message -->
-    <div v-if="errorMessage" class="cyber-panel border-red-500 bg-red-900 bg-opacity-20 mb-6">
-      <div class="cyber-panel-header border-red-500">
-        <span class="text-red-400 font-mono">&gt; ERROR</span>
+    <div v-if="errorMessage" class="cyber-panel error-panel mb-6">
+      <div class="cyber-panel-header error-panel-header">
+        <span class="color-danger font-mono">&gt; ERROR</span>
       </div>
-      <div class="p-4 text-red-300 font-mono">{{ errorMessage }}</div>
+      <div class="p-4 color-danger font-mono">{{ errorMessage }}</div>
     </div>
 
     <!-- Results Modal -->
@@ -67,9 +67,9 @@
       <Transition name="modal">
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm" @click.self="closeModal">
           <div class="cyber-modal max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="cyber-panel-header border-b-2 border-cyan-500">
-              <span class="text-cyan-400 font-mono">&gt; COMPARISON RESULTS</span>
-              <button @click="closeModal" class="text-pink-400 hover:text-pink-300 transition-colors">
+            <div class="cyber-panel-header border-b-2 border-accent">
+              <span class="panel-label-primary font-mono">&gt; COMPARISON RESULTS</span>
+              <button @click="closeModal" class="panel-label-secondary transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -79,33 +79,33 @@
             <div class="flex-1 overflow-y-auto p-6">
               <div class="grid grid-cols-3 gap-4 mb-6">
                 <div class="cyber-stat">
-                  <div class="text-green-400 text-3xl font-bold">{{ results.added.length }}</div>
-                  <div class="text-xs text-gray-400">ADDED</div>
+                  <div class="color-success text-3xl font-bold">{{ results.added.length }}</div>
+                  <div class="text-xs muted">ADDED</div>
                 </div>
                 <div class="cyber-stat">
-                  <div class="text-yellow-400 text-3xl font-bold">{{ results.modified.length }}</div>
-                  <div class="text-xs text-gray-400">MODIFIED</div>
+                  <div class="color-warning text-3xl font-bold">{{ results.modified.length }}</div>
+                  <div class="text-xs muted">MODIFIED</div>
                 </div>
                 <div class="cyber-stat">
-                  <div class="text-red-400 text-3xl font-bold">{{ results.removed.length }}</div>
-                  <div class="text-xs text-gray-400">REMOVED</div>
+                  <div class="color-danger text-3xl font-bold">{{ results.removed.length }}</div>
+                  <div class="text-xs muted">REMOVED</div>
                 </div>
               </div>
 
               <div v-if="!hasChanges" class="text-center py-12">
                 <div class="text-6xl mb-4">✓</div>
-                <div class="text-2xl text-cyan-400 font-orbitron">NO DIFFERENCES DETECTED</div>
-                <div class="text-gray-500 mt-2">Objects are identical</div>
+                <div class="text-2xl panel-label-primary font-orbitron">NO DIFFERENCES DETECTED</div>
+                <div class="muted mt-2">Objects are identical</div>
               </div>
 
               <div v-if="results.added.length > 0" class="mb-6">
-                <h3 class="text-green-400 font-mono text-lg mb-3 flex items-center gap-2">
+                <h3 class="color-success font-mono text-lg mb-3 flex items-center gap-2">
                   <span class="text-2xl">+</span> ADDED PROPERTIES
                 </h3>
                 <div class="space-y-2">
-                  <div v-for="(item, index) in results.added" :key="'add-' + index" class="cyber-diff-item border-green-500">
-                    <div class="font-mono text-sm text-green-300">{{ item.path }}</div>
-                    <div class="mt-1 text-gray-300 font-mono text-xs bg-green-900 bg-opacity-30 p-2 rounded">
+                  <div v-for="(item, index) in results.added" :key="'add-' + index" class="cyber-diff-item diff-border-success">
+                    <div class="font-mono text-sm color-success">{{ item.path }}</div>
+                    <div class="mt-1 body-text font-mono text-xs diff-bg-success p-2 rounded">
                       {{ formatValue(item.value) }}
                     </div>
                   </div>
@@ -113,22 +113,22 @@
               </div>
 
               <div v-if="results.modified.length > 0" class="mb-6">
-                <h3 class="text-yellow-400 font-mono text-lg mb-3 flex items-center gap-2">
+                <h3 class="color-warning font-mono text-lg mb-3 flex items-center gap-2">
                   <span class="text-2xl">~</span> MODIFIED PROPERTIES
                 </h3>
                 <div class="space-y-2">
-                  <div v-for="(item, index) in results.modified" :key="'mod-' + index" class="cyber-diff-item border-yellow-500">
-                    <div class="font-mono text-sm text-yellow-300">{{ item.path }}</div>
+                  <div v-for="(item, index) in results.modified" :key="'mod-' + index" class="cyber-diff-item diff-border-warning">
+                    <div class="font-mono text-sm color-warning">{{ item.path }}</div>
                     <div class="mt-2 grid grid-cols-2 gap-2">
                       <div>
-                        <div class="text-xs text-red-400 mb-1">BEFORE:</div>
-                        <div class="text-gray-300 font-mono text-xs bg-red-900 bg-opacity-30 p-2 rounded">
+                        <div class="text-xs color-danger mb-1">BEFORE:</div>
+                        <div class="body-text font-mono text-xs diff-bg-danger p-2 rounded">
                           {{ formatValue(item.oldValue) }}
                         </div>
                       </div>
                       <div>
-                        <div class="text-xs text-green-400 mb-1">AFTER:</div>
-                        <div class="text-gray-300 font-mono text-xs bg-green-900 bg-opacity-30 p-2 rounded">
+                        <div class="text-xs color-success mb-1">AFTER:</div>
+                        <div class="body-text font-mono text-xs diff-bg-success p-2 rounded">
                           {{ formatValue(item.newValue) }}
                         </div>
                       </div>
@@ -138,13 +138,13 @@
               </div>
 
               <div v-if="results.removed.length > 0" class="mb-6">
-                <h3 class="text-red-400 font-mono text-lg mb-3 flex items-center gap-2">
+                <h3 class="color-danger font-mono text-lg mb-3 flex items-center gap-2">
                   <span class="text-2xl">-</span> REMOVED PROPERTIES
                 </h3>
                 <div class="space-y-2">
-                  <div v-for="(item, index) in results.removed" :key="'rem-' + index" class="cyber-diff-item border-red-500">
-                    <div class="font-mono text-sm text-red-300">{{ item.path }}</div>
-                    <div class="mt-1 text-gray-300 font-mono text-xs bg-red-900 bg-opacity-30 p-2 rounded">
+                  <div v-for="(item, index) in results.removed" :key="'rem-' + index" class="cyber-diff-item diff-border-danger">
+                    <div class="font-mono text-sm color-danger">{{ item.path }}</div>
+                    <div class="mt-1 body-text font-mono text-xs diff-bg-danger p-2 rounded">
                       {{ formatValue(item.value) }}
                     </div>
                   </div>
@@ -152,7 +152,7 @@
               </div>
             </div>
 
-            <div class="border-t-2 border-cyan-500 p-4 flex justify-end">
+            <div class="border-t-2 border-accent p-4 flex justify-end">
               <button @click="closeModal" class="cyber-button-secondary">CLOSE</button>
             </div>
           </div>

@@ -2,8 +2,8 @@
   <div>
     <!-- Header Section -->
     <section class="mb-8 text-center">
-      <h2 class="text-2xl font-orbitron text-cyan-300 mb-3">Trading Profit Calculator</h2>
-      <p class="text-gray-400 max-w-3xl mx-auto mb-4">
+      <h2 class="text-2xl font-orbitron section-title mb-3">Trading Profit Calculator</h2>
+      <p class="muted max-w-3xl mx-auto mb-4">
         Paste your trading history and instantly calculate your total profit/loss. Supports futures trading data from brokers like TradingView, ThinkorSwim, and others.
       </p>
     </section>
@@ -11,8 +11,8 @@
     <!-- Input Panel -->
     <div class="cyber-panel mb-8">
       <div class="cyber-panel-header">
-        <span class="text-cyan-400 font-mono">&gt; TRADING_DATA.TXT</span>
-        <div class="h-2 w-2 bg-cyan-400 rounded-full animate-pulse"></div>
+        <span class="panel-label-primary font-mono">&gt; TRADING_DATA.TXT</span>
+        <div class="h-2 w-2 dot-primary rounded-full animate-pulse"></div>
       </div>
       <textarea
         v-model="tradingData"
@@ -48,11 +48,11 @@ Example:
     </div>
 
     <!-- Error Message -->
-    <div v-if="errorMessage" class="cyber-panel border-red-500 bg-red-900 bg-opacity-20 mb-6">
-      <div class="cyber-panel-header border-red-500">
-        <span class="text-red-400 font-mono">&gt; ERROR</span>
+    <div v-if="errorMessage" class="cyber-panel error-panel mb-6">
+      <div class="cyber-panel-header error-panel-header">
+        <span class="color-danger font-mono">&gt; ERROR</span>
       </div>
-      <div class="p-4 text-red-300 font-mono">{{ errorMessage }}</div>
+      <div class="p-4 color-danger font-mono">{{ errorMessage }}</div>
     </div>
 
     <!-- Results -->
@@ -60,48 +60,48 @@ Example:
       <!-- Summary Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="cyber-stat">
-          <div :class="totalProfit >= 0 ? 'text-green-400' : 'text-red-400'" class="text-3xl font-bold font-mono">
+          <div :class="totalProfit >= 0 ? 'color-success' : 'color-danger'" class="text-3xl font-bold font-mono">
             {{ totalProfit >= 0 ? '+' : '' }}${{ totalProfit.toFixed(2) }}
           </div>
-          <div class="text-xs text-gray-400 mt-1">TOTAL P&L</div>
+          <div class="text-xs muted mt-1">TOTAL P&L</div>
         </div>
         <div class="cyber-stat">
-          <div class="text-green-400 text-3xl font-bold font-mono">${{ totalGains.toFixed(2) }}</div>
-          <div class="text-xs text-gray-400 mt-1">TOTAL GAINS</div>
+          <div class="color-success text-3xl font-bold font-mono">${{ totalGains.toFixed(2) }}</div>
+          <div class="text-xs muted mt-1">TOTAL GAINS</div>
         </div>
         <div class="cyber-stat">
-          <div class="text-red-400 text-3xl font-bold font-mono">-${{ Math.abs(totalLosses).toFixed(2) }}</div>
-          <div class="text-xs text-gray-400 mt-1">TOTAL LOSSES</div>
+          <div class="color-danger text-3xl font-bold font-mono">-${{ Math.abs(totalLosses).toFixed(2) }}</div>
+          <div class="text-xs muted mt-1">TOTAL LOSSES</div>
         </div>
         <div class="cyber-stat">
-          <div class="text-cyan-400 text-3xl font-bold font-mono">{{ tradeCount }}</div>
-          <div class="text-xs text-gray-400 mt-1">EXECUTED TRADES</div>
+          <div class="panel-label-primary text-3xl font-bold font-mono">{{ tradeCount }}</div>
+          <div class="text-xs muted mt-1">EXECUTED TRADES</div>
         </div>
       </div>
 
       <!-- Win Rate -->
       <div class="cyber-panel p-6">
         <div class="flex items-center justify-between mb-4">
-          <span class="text-cyan-400 font-mono">&gt; PERFORMANCE METRICS</span>
+          <span class="panel-label-primary font-mono">&gt; PERFORMANCE METRICS</span>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>
-            <div class="text-gray-400 text-sm mb-1">Win Rate</div>
-            <div class="text-2xl font-bold" :class="winRate >= 50 ? 'text-green-400' : 'text-yellow-400'">
+            <div class="muted text-sm mb-1">Win Rate</div>
+            <div class="text-2xl font-bold" :class="winRate >= 50 ? 'color-success' : 'color-warning'">
               {{ winRate.toFixed(1) }}%
             </div>
           </div>
           <div>
-            <div class="text-gray-400 text-sm mb-1">Winning Trades</div>
-            <div class="text-2xl font-bold text-green-400">{{ winningTrades }}</div>
+            <div class="muted text-sm mb-1">Winning Trades</div>
+            <div class="text-2xl font-bold color-success">{{ winningTrades }}</div>
           </div>
           <div>
-            <div class="text-gray-400 text-sm mb-1">Losing Trades</div>
-            <div class="text-2xl font-bold text-red-400">{{ losingTrades }}</div>
+            <div class="muted text-sm mb-1">Losing Trades</div>
+            <div class="text-2xl font-bold color-danger">{{ losingTrades }}</div>
           </div>
           <div>
-            <div class="text-gray-400 text-sm mb-1">Avg Trade</div>
-            <div class="text-2xl font-bold" :class="avgTrade >= 0 ? 'text-green-400' : 'text-red-400'">
+            <div class="muted text-sm mb-1">Avg Trade</div>
+            <div class="text-2xl font-bold" :class="avgTrade >= 0 ? 'color-success' : 'color-danger'">
               {{ avgTrade >= 0 ? '+' : '' }}${{ avgTrade.toFixed(2) }}
             </div>
           </div>
@@ -111,8 +111,8 @@ Example:
       <!-- Trade List -->
       <div class="cyber-panel">
         <div class="cyber-panel-header">
-          <span class="text-cyan-400 font-mono">&gt; TRADE_LOG [{{ trades.length }}]</span>
-          <button @click="showAllTrades = !showAllTrades" class="text-pink-400 hover:text-pink-300 text-sm font-mono">
+          <span class="panel-label-primary font-mono">&gt; TRADE_LOG [{{ trades.length }}]</span>
+          <button @click="showAllTrades = !showAllTrades" class="panel-label-secondary text-sm font-mono">
             {{ showAllTrades ? 'COLLAPSE' : 'EXPAND' }}
           </button>
         </div>
@@ -120,21 +120,21 @@ Example:
           <div
             v-for="(trade, index) in trades"
             :key="index"
-            class="flex items-center justify-between px-4 py-2 border-b border-gray-800 hover:bg-gray-900"
+            class="flex items-center justify-between px-4 py-2 trade-row"
           >
             <div class="flex items-center gap-4">
-              <span class="text-gray-500 font-mono text-xs w-8">{{ index + 1 }}</span>
-              <span class="text-gray-400 font-mono text-sm">{{ trade.symbol }}</span>
-              <span :class="trade.type === 'Buy' ? 'text-green-400' : 'text-red-400'" class="font-mono text-sm">
+              <span class="muted font-mono text-xs w-8">{{ index + 1 }}</span>
+              <span class="body-text font-mono text-sm">{{ trade.symbol }}</span>
+              <span :class="trade.type === 'Buy' ? 'color-success' : 'color-danger'" class="font-mono text-sm">
                 {{ trade.type }}
               </span>
             </div>
-            <div :class="trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'" class="font-mono font-bold">
+            <div :class="trade.pnl >= 0 ? 'color-success' : 'color-danger'" class="font-mono font-bold">
               {{ trade.pnl >= 0 ? '+' : '' }}${{ trade.pnl.toFixed(2) }}
             </div>
           </div>
         </div>
-        <div v-else class="p-4 text-gray-500 text-center font-mono text-sm">
+        <div v-else class="p-4 muted text-center font-mono text-sm">
           Click EXPAND to view all trades
         </div>
       </div>

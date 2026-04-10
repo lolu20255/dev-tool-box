@@ -173,6 +173,14 @@ const tools = [
     title: 'MD::PREVIEW',
     subtitle: 'MARKDOWN RENDER ENGINE',
     icon: '#',
+  },
+  {
+    id: 'app-checkmarks',
+    name: 'APP CHECKLIST',
+    description: 'Mobile app checklist',
+    title: 'MOBILE::CHECKLIST',
+    subtitle: 'MOBILE APP DEPLOYMENT TRACKER',
+    icon: '&#10003;',
   }
 ]
 

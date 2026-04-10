@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/auth'
 import JsonDiff from './components/JsonDiff.vue'
 import TradingProfit from './components/TradingProfit.vue'
 import MarkdownPreview from './components/MarkdownPreview.vue'
+import AppCheckmarks from './components/AppCheckmarks.vue'
 
 const ALLOWED_EMAIL = 'mdiaz00147@gmail.com'
 
@@ -16,6 +17,7 @@ const routes = [
     meta: { allowedEmail: ALLOWED_EMAIL },
   },
   { path: '/md-preview', name: 'md-preview', component: MarkdownPreview },
+  { path: '/app-checkmarks', name: 'app-checkmarks', component: AppCheckmarks },
 ]
 
 const router = createRouter({

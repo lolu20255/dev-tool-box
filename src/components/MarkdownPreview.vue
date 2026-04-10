@@ -8,6 +8,42 @@
       </p>
     </section>
 
+    <!-- Saved Files Dropdown -->
+    <div v-if="user && savedFiles.length" class="cyber-panel mb-4">
+      <div class="cyber-panel-header">
+        <span class="panel-label-primary font-mono">&gt; SAVED FILES</span>
+        <div class="h-2 w-2 dot-primary rounded-full animate-pulse"></div>
+      </div>
+      <div class="p-4 flex items-center gap-3">
+        <select
+          v-model="selectedFileId"
+          @change="loadSavedFile"
+          class="cyber-input rounded-lg flex-1 py-2"
+        >
+          <option value="">-- Select a saved file --</option>
+          <option v-for="file in savedFiles" :key="file.id" :value="file.id">
+            {{ file.name }}
+          </option>
+        </select>
+        <button
+          v-if="selectedFileId"
+          @click="deleteSavedFile"
+          :disabled="deleting"
+          class="cyber-button text-xs px-3 py-2 !bg-red-600 hover:!bg-red-500"
+        >{{ deleting ? '...' : 'DELETE' }}</button>
+      </div>
+    </div>
+
+    <!-- Cloud save hint -->
+    <div v-if="user" class="mb-4 flex items-center gap-2 px-1 text-xs font-mono muted">
+      <span class="text-base">&#9729;</span>
+      Saved files are stored in the cloud. Log in from any device to access your markdown content.
+    </div>
+    <div v-else class="mb-4 flex items-center gap-2 px-1 text-xs font-mono muted">
+      <span class="text-base">&#9729;</span>
+      Log in to save your markdown files to the cloud and access them anytime.
+    </div>
+
     <!-- Drop Zone -->
     <div
       @dragover.prevent="isDragging = true"
@@ -22,6 +58,12 @@
       <div class="cyber-panel-header">
         <span class="panel-label-primary font-mono">&gt; INPUT.MD</span>
         <div class="flex items-center gap-3">
+          <button
+            v-if="user && markdownSource"
+            @click.stop="promptSave"
+            :disabled="saving"
+            class="cyber-button text-xs px-3 py-1"
+          >{{ saving ? 'SAVING...' : 'SAVE' }}</button>
           <button
             v-if="markdownSource"
             @click.stop="clearContent"
@@ -81,17 +123,61 @@
 
       <div class="p-6 markdown-body" v-html="renderedHtml"></div>
     </div>
+
+    <!-- Save Modal -->
+    <Transition name="modal">
+      <div v-if="showSaveModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="showSaveModal = false">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="cyber-modal relative z-10 w-full max-w-sm p-6">
+          <h3 class="text-lg font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-600 mb-4">
+            SAVE::FILE
+          </h3>
+          <label class="block text-xs font-mono panel-label-primary mb-1">FILE NAME</label>
+          <input
+            v-model="saveName"
+            type="text"
+            placeholder="my-document.md"
+            class="cyber-input rounded-lg mb-4"
+            @keyup.enter="confirmSave"
+          />
+          <div class="flex justify-end gap-3">
+            <button @click="showSaveModal = false" class="cyber-button-secondary text-xs px-4 py-2">CANCEL</button>
+            <button @click="confirmSave" :disabled="!saveName.trim() || saving" class="cyber-button text-xs px-4 py-2">
+              {{ saving ? 'SAVING...' : 'SAVE' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { marked } from 'marked'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '../stores/auth'
+import { useToast } from '../composables/useToast'
+import { db } from '../firebase'
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp
+} from 'firebase/firestore'
 
 marked.setOptions({
   breaks: true,
   gfm: true
 })
+
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+const toast = useToast()
 
 const markdownSource = ref('')
 const fileName = ref('')
@@ -99,10 +185,88 @@ const isDragging = ref(false)
 const copied = ref(false)
 const fileInput = ref(null)
 
+// Saved files state
+const savedFiles = ref([])
+const selectedFileId = ref('')
+const saving = ref(false)
+const deleting = ref(false)
+const showSaveModal = ref(false)
+const saveName = ref('')
+
 const renderedHtml = computed(() => {
   if (!markdownSource.value) return ''
   return marked.parse(markdownSource.value)
 })
+
+// Fetch saved files when user changes
+watch(user, (u) => {
+  if (u) {
+    fetchSavedFiles()
+  } else {
+    savedFiles.value = []
+    selectedFileId.value = ''
+  }
+}, { immediate: true })
+
+async function fetchSavedFiles() {
+  if (!user.value) return
+  const q = query(
+    collection(db, 'users', user.value.uid, 'markdownFiles'),
+    orderBy('createdAt', 'desc')
+  )
+  const snapshot = await getDocs(q)
+  savedFiles.value = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+}
+
+function loadSavedFile() {
+  const file = savedFiles.value.find(f => f.id === selectedFileId.value)
+  if (file) {
+    markdownSource.value = file.content
+    fileName.value = file.name
+  }
+}
+
+function promptSave() {
+  saveName.value = fileName.value || ''
+  showSaveModal.value = true
+}
+
+async function confirmSave() {
+  if (!saveName.value.trim() || !user.value) return
+  saving.value = true
+  try {
+    await addDoc(collection(db, 'users', user.value.uid, 'markdownFiles'), {
+      name: saveName.value.trim(),
+      content: markdownSource.value,
+      createdAt: serverTimestamp()
+    })
+    showSaveModal.value = false
+    toast.success(`"${saveName.value.trim()}" saved to cloud`)
+    await fetchSavedFiles()
+  } catch {
+    toast.error('Failed to save file. Please try again.')
+  } finally {
+    saving.value = false
+  }
+}
+
+async function deleteSavedFile() {
+  if (!selectedFileId.value || !user.value) return
+  const deletedName = savedFiles.value.find(f => f.id === selectedFileId.value)?.name
+  deleting.value = true
+  try {
+    await deleteDoc(doc(db, 'users', user.value.uid, 'markdownFiles', selectedFileId.value))
+    selectedFileId.value = ''
+    markdownSource.value = ''
+    fileName.value = ''
+    toast.success(`"${deletedName}" deleted from cloud`)
+    await fetchSavedFiles()
+  } catch {
+    toast.error('Failed to delete file. Please try again.')
+  } finally {
+    deleting.value = false
+  }
+}
 
 function triggerFileInput() {
   fileInput.value?.click()
@@ -121,6 +285,7 @@ function handleDrop(e) {
 
 function loadFile(file) {
   fileName.value = file.name
+  selectedFileId.value = ''
   const reader = new FileReader()
   reader.onload = (e) => {
     markdownSource.value = e.target.result
@@ -131,6 +296,7 @@ function loadFile(file) {
 function clearContent() {
   markdownSource.value = ''
   fileName.value = ''
+  selectedFileId.value = ''
   if (fileInput.value) fileInput.value.value = ''
 }
 
